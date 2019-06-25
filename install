@@ -1,0 +1,81 @@
+#!/bin/sh
+
+install_yay(){
+	echo "Installing yay"
+	git clone https://aur.archlinux.org/yay.git /tmp/yay-install
+	cd /tmp/yay-install
+	makepkg -si --noconfirm
+	echo "yay installed"
+}
+
+install_zplugin(){
+	echo "Installing zplugin"
+	mkdir -p ~/.zplugin
+	git clone https://github.com/zdharma/zplugin.git ~/.zplugin/bin
+	zsh -c "zcompile ~/.zplugin/bin/zplugin.zsh"
+	echo "zplugin installed"
+}
+
+
+git_clone_or_update(){
+	git_repo="$1" 
+	folder="$2" 
+
+	if [ ! -d "$folder" ] ; then
+	    echo "cloning $git_repo into $folder"
+	    mkdir -p "$folder"
+	    git clone "$git_repo" "$folder"
+	else
+	    echo "udating $git_repo in $folder"
+	    git -C "$folder" pull "$git_repo"
+	fi
+}
+
+install_base(){
+	# keep stow from "owning" the whole dir
+	mkdir -p "$HOME/.config/nvim"
+	STOW_DIR=/home/benni/homestow stow git nvim zsh
+}
+
+install_ui(){
+	install_base
+	STOW_DIR=/home/benni/homestow stow sway
+}
+
+install_home(){
+	install_ui
+	STOW_DIR=/home/benni/homestow stow home
+	sudo pacman -S --noconfirm --needed benjaminbauer-home
+}
+
+install_work(){
+	install_base
+	STOW_DIR=/home/benni/homestow stow work
+	sudo pacman -S --noconfirm --needed benjaminbauer-work
+}
+
+# does yay exist?
+hash yay 2> /dev/null;
+if [ "${?}" = 0 ]; then
+	echo "yay already installed - skipping"
+else
+	install_yay
+fi
+
+# clone homestow
+git_clone_or_update "git@github.com:benjaminbauer/homestow" "$HOME/homestow"
+
+# stow stuff
+# seperated by "package"
+install_home
+
+# install nvim plugin manager
+git_clone_or_update "https://github.com/k-takata/minpac.git" "$HOME/.config/nvim/pack/minpac/opt/minpac"
+
+# does zplugin exist?
+if [ -d "$HOME/.zplugin/bin" ] ; then
+	echo "zplugin already installed - skipping"
+else
+	install_zplugin
+fi
+
