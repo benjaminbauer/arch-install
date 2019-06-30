@@ -1,13 +1,5 @@
 #!/bin/sh
 
-install_yay(){
-	echo "Installing yay"
-	git clone https://aur.archlinux.org/yay.git /tmp/yay-install
-	cd /tmp/yay-install
-	makepkg -si --noconfirm
-	echo "yay installed"
-}
-
 install_zplugin(){
 	echo "Installing zplugin"
 	mkdir -p ~/.zplugin
@@ -53,14 +45,6 @@ install_work(){
 	STOW_DIR=/home/benni/homestow stow work
 	sudo pacman -S --noconfirm --needed benjaminbauer-work
 }
-
-# does yay exist?
-hash yay 2> /dev/null;
-if [ "${?}" = 0 ]; then
-	echo "yay already installed - skipping"
-else
-	install_yay
-fi
 
 # clone homestow
 git_clone_or_update "git@github.com:benjaminbauer/homestow" "$HOME/homestow"
