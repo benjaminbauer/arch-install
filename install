@@ -38,6 +38,8 @@ install_home(){
 	install_ui
 	STOW_DIR=/home/benni/homestow stow home
 	sudo pacman -S --noconfirm --needed benjaminbauer-home
+
+	pip install --user --upgrade -q subliminal
 }
 
 install_work(){
