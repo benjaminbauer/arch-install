@@ -10,8 +10,8 @@ install_zplugin(){
 
 
 git_clone_or_update(){
-	git_repo="$1" 
-	folder="$2" 
+	git_repo="$1"
+	folder="$2"
 
 	if [ ! -d "$folder" ] ; then
 	    echo "cloning $git_repo into $folder"
@@ -49,7 +49,7 @@ install_work(){
 }
 
 # clone homestow
-git_clone_or_update "git@github.com:benjaminbauer/homestow" "$HOME/homestow"
+git_clone_or_update "https://github.com/benjaminbauer/homestow.git" "$HOME/homestow"
 
 # stow stuff
 # seperated by "package"
