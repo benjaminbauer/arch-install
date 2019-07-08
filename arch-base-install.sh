@@ -45,7 +45,7 @@ base_install() {
   mount_drives
   # install the base system
   pacstrap /mnt base
-  
+
   # persist the fstab
   genfstab -U -p /mnt > /mnt/etc/fstab
 }
@@ -53,7 +53,7 @@ base_install() {
 setup_systemd-boot() {
   # setup bootloader
   bootctl --path=/boot install
-  
+
   #create entry for bootctl
   cat <<BOOTENTRY > /boot/loader/entries/arch.conf
 title   Arch Linux
@@ -61,8 +61,8 @@ linux   /vmlinuz-linux
 initrd  /initramfs-linux.img
 options root=/dev/sda2 rw
 BOOTENTRY
-  
-  # adjust loader.cong 
+
+  # adjust loader.cong
   cat <<LOADERCONF > /boot/loader/loader.conf
 default  arch
 timeout  4
@@ -74,13 +74,13 @@ LOADERCONF
 base_setup() {
   # switch into the installed system
   arch-chroot /mnt
-  
+
   if [ -z ${new_hostname+x} ] ; then
     echo "new_hostname is unset"
     echo -n "enter a hostname: "
     read new_hostname
   fi
-  
+
   if [ -z ${new_default_user+x} ] ; then
     echo "new_default_user is unset"
     echo -n "enter the default user: "
@@ -105,9 +105,9 @@ base_setup() {
   localectl set-locale LANG=en_US.UTF-8
 
   # TODO set keyboard layout to AltGr Intl?
-  
+
   hostnamectl set-hostname $new_hostname
-  
+
   cat <<HOSTSENTRIES > /etc/hosts
 127.0.0.1      localhost.localdomain    localhost
 ::1            ipv6-localhost           ipv6-localhost
@@ -119,14 +119,26 @@ HOSTSENTRIES
   # create default user
   useradd -m -g users -G wheel -s /bin/zsh $new_default_user
   passwd $new_default_user
-  
+
   # install sudo and zsh (as dependency, so they get "adopted" later by a metapackage)
   pacman -S --nonconfirm --asdeps sudo zsh
   # allow members of wheel to invoke sudo
   sed -i '/wheel ALL=(ALL) ALL/s/^#//g' /etc/sudoers
-  
+
   setup_systemd-boot
-  
+
+  # switch to the new user
+  su $new_default_user
+
+  # clone this repo
+  git clone https://git.io/fjiVu $HOME/arch-install
+
+  # install everything else
+  sh $HOME/arch-install/install
+
+  # exit back to root
+  exit
+
   # leave chroot environment
   exit
 }
