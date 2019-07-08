@@ -1,13 +1,5 @@
 #!/bin/sh
 
-# enable proxy, prior to downloading this gist in virtualbox behind NTLM proxy
-# export http_proxy=http://10.0.2.2:3128
-# export https_proxy=http://10.0.2.2:3128
-# download this GIST with:
-# shorten it with git.io
-# curl -L <URL> > arch-install.sh
-# then source the file and call the needed functions
-
 partition() {
   # partitioning for EFI system
   ## label as gpt
@@ -131,7 +123,7 @@ HOSTSENTRIES
   su $new_default_user
 
   # clone this repo
-  git clone https://git.io/fjiVu $HOME/arch-install
+  git clone https://github.com/benjaminbauer/arch-install $HOME/arch-install
 
   # install everything else
   sh $HOME/arch-install/install
