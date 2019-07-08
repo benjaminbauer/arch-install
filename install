@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# this file indicates what gets installed
+envFile="$HOME/.archenv"
+
 install_zplugin(){
 	echo "Installing zplugin"
 	mkdir -p ~/.zplugin
@@ -51,9 +54,39 @@ install_work(){
 # clone homestow
 git_clone_or_update "https://github.com/benjaminbauer/homestow.git" "$HOME/homestow"
 
-# stow stuff
-# seperated by "package"
-install_home
+
+if [ -f "$envFile" ] ; then
+  selected_env=$(cat "$envFile")
+else
+  echo -n "what env do you want to setup (home,work)?: "
+  read archenv
+
+  case "$archenv" in
+    home|work)
+      echo $archenv > "$envFile"
+      selected_env="$archenv"
+      break
+      ;;
+    *)
+      echo "unexpected '$archenv'"
+      exit 1
+      ;;
+  esac
+fi
+
+case "$selected_env" in
+  home)
+    install_home
+    break
+    ;;
+  work)
+    install_work
+    break
+    ;;
+  *)
+    echo "unxecpected value found in '$envFile': '$selected_env', exiting"
+    exit 1
+esac
 
 # install nvim plugin manager
 git_clone_or_update "https://github.com/k-takata/minpac.git" "$HOME/.config/nvim/pack/minpac/opt/minpac"
