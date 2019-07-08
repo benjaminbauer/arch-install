@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 partition() {
   # partitioning for EFI system
   ## label as gpt
@@ -32,7 +34,7 @@ unmount_drives() {
 base_install() {
   pacman -Sy --noconfirm reflector
   # take the 20 most recently updated servers and select the 10 fastest as the new mirrorlist
-  reflector -c DE -c CH -c AT -l 20 --fastest 10 --save /etc/pacmand.d/mirrorlist
+  reflector -c DE -c CH -c AT -l 20 --fastest 10 --save /etc/pacman.d/mirrorlist
 
   mount_drives
   # install the base system
@@ -109,11 +111,12 @@ HOSTSENTRIES
   passwd
 
   # create default user
+  echo "creating user '$new_default_user'"
   useradd -m -g users -G wheel -s /bin/zsh $new_default_user
   passwd $new_default_user
 
   # install sudo and zsh (as dependency, so they get "adopted" later by a metapackage)
-  pacman -S --nonconfirm --asdeps sudo zsh
+  pacman -S --noconfirm --asdeps sudo zsh
   # allow members of wheel to invoke sudo
   sed -i '/wheel ALL=(ALL) ALL/s/^#//g' /etc/sudoers
 
