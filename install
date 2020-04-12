@@ -43,12 +43,16 @@ install_home(){
 	sudo pacman -S --noconfirm --needed benjaminbauer-home
 
 	pip install --user --upgrade -q subliminal
+	#TODO: this belongs in base
+	pip install --user --upgrade -q neovim-remote
 }
 
 install_work(){
 	install_base
 	STOW_DIR=/home/benni/homestow stow work
 	sudo pacman -S --noconfirm --needed benjaminbauer-work
+	#TODO: this belongs in base
+	pip install --user --upgrade -q neovim-remote
 }
 
 # clone homestow
